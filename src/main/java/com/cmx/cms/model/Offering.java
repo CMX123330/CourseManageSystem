@@ -34,4 +34,9 @@ public class Offering {
         return "Offering{offeringId=" + offeringId + ", semesterId=" + semesterId + ", courseId=" + courseId
                 + ", teacherId=" + teacherId + ", weeklyHours=" + weeklyHours + "}";
     }
+
+    public void setWeeklyHours(String parameter) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setWeeklyHours'");
+    }
 }

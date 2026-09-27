@@ -13,6 +13,9 @@
         <body>
             <h1>院系列表</h1>
             <a href="${pageContext.request.contextPath}/department?action=add">新增</a>
+            <c:if test="${not empty error}">
+                <p style="color:red">${error}</p>
+            </c:if>
             <table border="1">
                 <tr>
                     <th>编号</th>

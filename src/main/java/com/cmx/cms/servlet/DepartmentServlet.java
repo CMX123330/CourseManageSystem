@@ -78,8 +78,20 @@ public class DepartmentServlet extends HttpServlet {
         {
             try {
                 departmentDao.delete(req.getParameter("id"));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (SQLException e) {
+                if(e.getErrorCode() == 1451)
+                {
+                    req.setAttribute("error", "删除失败：该院系下还有专业或教师，请先删除相关数据");
+                    try {
+                        req.setAttribute("departments", departmentDao.getAll());
+                    } catch (Exception ex) {
+                        // TODO: handle exception
+                        System.out.println("删除异常");
+                        ex.printStackTrace();
+                    }
+                    req.getRequestDispatcher("/WEB-INF/jsp/department-list.jsp").forward(req, resp);
+                    return ;
+                }
             }
         }
         resp.sendRedirect(req.getContextPath() + "/department");

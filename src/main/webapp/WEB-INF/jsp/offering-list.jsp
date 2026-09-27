@@ -6,12 +6,16 @@
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Document</title>
+            <title>开课列表</title>
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
         </head>
 
         <body>
             <h1>开课列表</h1>
             <a href="${pageContext.request.contextPath}/offering?action=add">添加课程</a>
+            <c:if test="${not empty error}">
+                <p style="color:red">${error}</p>
+            </c:if>
             <form action="${pageContext.request.contextPath}/offering" method="get">
                 <select name="semesterId">
                     <option value="">全部学期</option>

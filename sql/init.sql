@@ -79,6 +79,7 @@ create table course(
     nature VARCHAR(4) not null COMMENT '课程性质（必修/选修）',
     constraint fk_course_department FOREIGN KEY(department_id) REFERENCES department (department_id)
 ) ENGINE=InnoDB DEFAULT charset=utf8mb4;
+--开课表
 CREATE Table offering(
     offering_id VARCHAR(10) PRIMARY KEY COMMENT '开课编号，如 KK001',
     semester_id VARCHAR(20) NOT NULL COMMENT '学期编号',
@@ -97,6 +98,7 @@ CREATE table offering_class(
     constraint fk_oc_offering FOREIGN KEY (offering_id) REFERENCES offering (offering_id),
     constraint fk_oc_class FOREIGN KEY (class_id) REFERENCES clazz (class_id)
 ) ENGINE=InnoDB DEFAULT charset=utf8mb4;
+--排课表
 create table schedule(
     schedule_id VARCHAR(20) PRIMARY KEY COMMENT '排课编号，如 PK001',
     offering_id VARCHAR(10) not NULL COMMENT '开课编号',

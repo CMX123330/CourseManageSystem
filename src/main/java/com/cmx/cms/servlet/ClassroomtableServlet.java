@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.cmx.cms.dao.ClassDao;
 import com.cmx.cms.dao.ClassroomDao;
 import com.cmx.cms.dao.ScheduleDao;
 import com.cmx.cms.dao.SemesterDao;

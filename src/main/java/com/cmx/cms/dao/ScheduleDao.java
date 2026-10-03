@@ -80,8 +80,8 @@ public class ScheduleDao {
                         "JOIN offering_class oc ON o.offering_id = oc.offering_id " + 
                         "JOIN course c ON o.course_id = c.course_id " + 
                         "JOIN teacher t ON o.teacher_id = t.teacher_id " + 
-                        "WHERE oc.class_id = ?" + 
-                        "  AND o.semester_id = ?" + 
+                        "WHERE oc.class_id = ? " +
+                        "AND o.semester_id = ? " +
                         "ORDER BY s.weekday, s.start_slot ";
         return qr.query(sql, new BeanListHandler<>(ScheduleView.class), classId, semesterId);
     }

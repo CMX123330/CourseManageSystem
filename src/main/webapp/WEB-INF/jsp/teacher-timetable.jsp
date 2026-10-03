@@ -13,7 +13,7 @@
             <h1>教师课表</h1>
 
             <%-- 顶部筛选表单：GET 提交，参数带到 URL --%>
-                <form action="${pageContext.request.contextPath}/teacherTimetable" method="get">
+                <form action="${pageContext.request.contextPath}/teachertable" method="get">
                     教师：<select name="teacherId">
                         <c:forEach var="cl" items="${teachers}">
                             <option value="${cl.teacherId}" ${param.teacherId==cl.teacherId ? 'selected' : '' }>

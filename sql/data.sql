@@ -104,3 +104,9 @@ INSERT INTO schedule(schedule_id, offering_id, weekday, start_slot, slot_count, 
 ('PK019','KK014',2,7,2,'L601',1,16,'全周'), ('PK020','KK016',3,7,2,'L601',1,16,'全周'),
 ('PK021','KK017',1,5,2,'L502',1,16,'全周'), ('PK022','KK018',2,1,2,'R201',1,16,'全周'),
 ('PK023','KK018',4,3,2,'R201',1,16,'全周');
+INSERT INTO user(user_id, password, role, name) VALUES
+('admin','123456','admin','系统管理员'),
+('T001','123456','teacher','王建国'),
+('T002','123456','teacher','李慧敏'),
+('2024010101','123456','student','刘洋'),
+('2024010102','123456','student','周雨彤');

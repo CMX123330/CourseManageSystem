@@ -13,11 +13,11 @@
             <h1>教室课表</h1>
 
             <%-- 顶部筛选表单：GET 提交，参数带到 URL --%>
-                <form action="${pageContext.request.contextPath}/timetable" method="get">
+                <form action="${pageContext.request.contextPath}/classroomtable" method="get">
                     教室：<select name="classroomId">
-                        <c:forEach var="cl" items="${clazzs}">
-                            <option value="${cl.classroomId}" ${param.classroomId==classroomId ? 'selected' : '' }>
-                                ${cl.name}</option>
+                        <c:forEach var="cl" items="${classrooms}">
+                            <option value="${cl.classroomId}" ${param.classroomId == cl.classroomId ? 'selected' : '' }>
+                                ${cl.classroomId}</option>
                         </c:forEach>
                     </select>
                     学期：<select name="semesterId">

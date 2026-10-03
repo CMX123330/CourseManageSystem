@@ -112,3 +112,10 @@ create table schedule(
     constraint fk_schedule_classroom FOREIGN KEY (classroom_id) REFERENCES classroom(classroom_id),
     constraint fk_schedule_offering  FOREIGN KEY (offering_id)  REFERENCES offering(offering_id)
 )engine =InnoDB DEFAULT charset=utf8mb4;
+-- 用户表
+create table user(
+    user_id  VARCHAR(20) PRIMARY KEY COMMENT '登录账号（管理员=admin，教师=工号，学生=学号）',
+    password VARCHAR(64) NOT NULL COMMENT '密码（先明文，后续哈希）',
+    role     VARCHAR(10) NOT NULL COMMENT '角色：admin/teacher/student',
+    name     VARCHAR(50) NOT NULL COMMENT '显示姓名'
+)ENGINE=InnoDB DEFAULT charset=utf8mb4;

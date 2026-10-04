@@ -119,3 +119,10 @@ create table user(
     role     VARCHAR(10) NOT NULL COMMENT '角色：admin/teacher/student',
     name     VARCHAR(50) NOT NULL COMMENT '显示姓名'
 )ENGINE=InnoDB DEFAULT charset=utf8mb4;
+create table student_offering(
+    student_id  VARCHAR(10) NOT NULL COMMENT '学号',
+    offering_id VARCHAR(10) NOT NULL COMMENT '开课编号',
+    PRIMARY KEY (student_id, offering_id),
+    constraint fk_so_student  FOREIGN KEY (student_id)  REFERENCES student(student_id),
+    constraint fk_so_offering FOREIGN KEY (offering_id) REFERENCES offering(offering_id)
+)ENGINE=InnoDB DEFAULT charset=utf8mb4;

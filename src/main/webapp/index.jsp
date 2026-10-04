@@ -56,7 +56,7 @@
                     <div class="card">
                         <h2>我的</h2>
                         <div class="nav-grid">
-                            <a class="nav-card" href="${pageContext.request.contextPath}/timetable">我的课表</a>
+                            <a class="nav-card" href="${pageContext.request.contextPath}/myTimetable">我的课表</a>
                         </div>
                     </div>
                 </c:if>

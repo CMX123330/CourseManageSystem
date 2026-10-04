@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cmx.cms.model.User;
+
 @WebFilter("/*")
 public class AuthFilter implements Filter {
 
@@ -27,10 +29,30 @@ public class AuthFilter implements Filter {
         }
 
         HttpSession session = req.getSession(false);
-        if (session != null && session.getAttribute("user") != null) {
+        if (session == null || session.getAttribute("user") == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");   // 未登录：踢 + 必须 return
+            return;
+        }
+        User user = (User) session.getAttribute("user");
+        String role = user.getRole();
+        String uripath = req.getRequestURI();
+        if ("admin".equals(role)) {
+            chain.doFilter(request, response);
+            return;
+        }
+        boolean allowed = false;
+        if ("teacher".equals(role)) {
+            allowed = uripath.contains("teachertable") || uripath.contains("classroomtable")
+                    || uripath.contains("timetable") || uripath.endsWith("/");
+
+        } else if ("student".equals(role)) {
+            allowed = uripath.contains("/mytimetable") || uripath.contains("/courseSelect")
+                    || uripath.endsWith("/");
+        }
+        if (allowed) {
             chain.doFilter(request, response);
         } else {
-            resp.sendRedirect(req.getContextPath() + "/login");   // 否则踢回登录页
+            resp.sendRedirect(req.getContextPath() + "/");
         }
     }
 

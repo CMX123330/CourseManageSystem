@@ -39,15 +39,26 @@ public class CourseSelectServlet extends HttpServlet {
         String studentId = u.getUserId();
         StudentOfferingDao dao = new StudentOfferingDao();
         if ("select".equals(action)) {
-            StudentOffering so = new StudentOffering();
-            so.setStudentId(studentId);
-            so.setOfferingId(req.getParameter("offeringId"));
             try {
-                dao.add(so);
+                if (dao.isValidOffering(req.getParameter("offeringId"), "2025-2026-1"))
+                {
+                    StudentOffering so = new StudentOffering();
+                    so.setStudentId(studentId);
+                    so.setOfferingId(req.getParameter("offeringId"));
+                    try {
+                        dao.add(so);
+                    } catch (SQLException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } 
+                }
+                else{
+                    req.setAttribute("error", "写入失败");
+                }
             } catch (SQLException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            } 
+            }
         } else if ("drop".equals(action)) {
             try {
                 dao.delete(studentId, req.getParameter("offeringId"));

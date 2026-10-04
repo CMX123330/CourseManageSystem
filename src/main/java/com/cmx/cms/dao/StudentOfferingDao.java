@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 import com.cmx.cms.model.StudentOffering;
 import com.cmx.cms.model.StudentOfferingView;
@@ -49,4 +50,13 @@ public class StudentOfferingDao {
                    + "(SELECT offering_id FROM student_offering WHERE student_id = ?)";
         return qr.query(sql, new BeanListHandler<>(StudentOfferingView.class), semesterId, studentId);
     }
+
+// 该开课是否属于本学期选修：是才允许选
+public boolean isValidOffering(String offeringId, String semesterId) throws SQLException {
+    String sql = "SELECT COUNT(*) FROM offering o JOIN course c ON o.course_id = c.course_id "
+               + "WHERE o.offering_id = ? AND o.semester_id = ? AND c.nature = '选修'";
+    Number n = qr.query(sql, new ScalarHandler<>(), offeringId, semesterId);
+    return n.intValue() > 0;
+}
+
 }

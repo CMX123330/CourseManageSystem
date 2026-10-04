@@ -126,3 +126,17 @@ create table student_offering(
     constraint fk_so_student  FOREIGN KEY (student_id)  REFERENCES student(student_id),
     constraint fk_so_offering FOREIGN KEY (offering_id) REFERENCES offering(offering_id)
 )ENGINE=InnoDB DEFAULT charset=utf8mb4;
+create table schedule_change(
+    change_id    VARCHAR(20) PRIMARY KEY COMMENT '申请编号，如 CH001',
+    schedule_id  VARCHAR(20) NOT NULL COMMENT '原排课编号',
+    offering_id  VARCHAR(10) NOT NULL COMMENT '开课编号（调课不换课程）',
+    teacher_id   VARCHAR(20) NOT NULL COMMENT '申请人（教师工号）',
+    target_weekday      TINYINT NOT NULL COMMENT '目标星期 1-7',
+    target_start_slot   TINYINT NOT NULL COMMENT '目标起始节次',
+    target_slot_count   TINYINT NOT NULL COMMENT '目标节数',
+    target_classroom_id VARCHAR(10) NOT NULL COMMENT '目标教室',
+    reason       VARCHAR(200) COMMENT '调课原因',
+    status       VARCHAR(10) NOT NULL DEFAULT '待审批' COMMENT '待审批/已通过/已驳回',
+    constraint fk_sc_schedule FOREIGN KEY (schedule_id) REFERENCES schedule(schedule_id),
+    constraint fk_sc_offering FOREIGN KEY (offering_id) REFERENCES offering(offering_id)
+)ENGINE=InnoDB DEFAULT charset=utf8mb4;

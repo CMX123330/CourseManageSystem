@@ -55,6 +55,12 @@
                                                             ${s.courseName}<br>
                                                             ${s.teacherName} ${s.classroomId}
                                                             <c:if test="${s.weekType != '全周'}">（${s.weekType}）</c:if>
+                                                            <c:forEach var="hd" items="${holidays}">
+                                                                <c:if test="${hd.weekday == day && hd.week >= s.startWeek && hd.week <= s.endWeek
+                                                                    && (s.weekType == '全周' || (s.weekType == '单周' && hd.week % 2 == 1) || (s.weekType == '双周' && hd.week % 2 == 0))}">
+                                                                    <br><span style="color:red">停课·${hd.name}</span>
+                                                                </c:if>
+                                                            </c:forEach>
                                                         </c:if>
                                                 </c:forEach>
                                             </td>

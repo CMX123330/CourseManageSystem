@@ -13,6 +13,7 @@ import com.cmx.cms.dao.ScheduleDao;
 import com.cmx.cms.dao.SemesterDao;
 import com.cmx.cms.dao.TeacherDao;
 import com.cmx.cms.model.User;
+import com.cmx.cms.service.ScheduleService;
 
 @WebServlet("/teachertable")
 public class TeachertableServlet extends HttpServlet {
@@ -30,6 +31,7 @@ public class TeachertableServlet extends HttpServlet {
             req.setAttribute("semesters", new SemesterDao().getAll());
             req.setAttribute("schedules", new ScheduleDao().getByTeacherId(teacherId, semesterId));
             req.setAttribute("slots", Arrays.asList(1, 3, 5, 7, 9));
+            req.setAttribute("holidays", new ScheduleService().getHolidayMarks(semesterId));
             req.getRequestDispatcher("/WEB-INF/jsp/teacher-timetable.jsp").forward(req, resp);
         } catch (Exception e) {
             // TODO: handle exception

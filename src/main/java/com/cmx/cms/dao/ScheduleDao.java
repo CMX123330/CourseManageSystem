@@ -72,10 +72,11 @@ public class ScheduleDao {
     }
     public List<ScheduleView> getByClassId(String classId,String semesterId) throws SQLException
     {
-        String sql="SELECT c.name AS courseName, t.name AS teacherName," + 
+        String sql="SELECT s.schedule_id AS scheduleId, c.name AS courseName, t.name AS teacherName," +
                         "       s.classroom_id AS classroomId, s.weekday," + 
-                        "       s.start_slot AS startSlot, s.slot_count AS slotCount, s.week_type AS weekType " + 
-                        "FROM schedule s " + 
+                        "       s.start_slot AS startSlot, s.slot_count AS slotCount, s.week_type AS weekType, " +
+                        "       s.start_week AS startWeek, s.end_week AS endWeek " +
+                        "FROM schedule s " +
                         "JOIN offering o ON s.offering_id = o.offering_id " + 
                         "JOIN offering_class oc ON o.offering_id = oc.offering_id " + 
                         "JOIN course c ON o.course_id = c.course_id " + 
@@ -88,9 +89,10 @@ public class ScheduleDao {
 
     // 教师课表：教师直接挂开课表，不需要经过中间表
     public List<ScheduleView> getByTeacherId(String teacherId, String semesterId) throws SQLException {
-        String sql = "SELECT c.name AS courseName, t.name AS teacherName, "
+        String sql = "SELECT s.schedule_id AS scheduleId, c.name AS courseName, t.name AS teacherName, "
                    + "s.classroom_id AS classroomId, s.weekday, "
-                   + "s.start_slot AS startSlot, s.slot_count AS slotCount, s.week_type AS weekType "
+                   + "s.start_slot AS startSlot, s.slot_count AS slotCount, s.week_type AS weekType, "
+                   + "s.start_week AS startWeek, s.end_week AS endWeek "
                    + "FROM schedule s "
                    + "JOIN offering o ON s.offering_id = o.offering_id "
                    + "JOIN course c ON o.course_id = c.course_id "
@@ -102,9 +104,10 @@ public class ScheduleDao {
 
     // 教室课表：教室直接是排课表的字段
     public List<ScheduleView> getByClassroomId(String classroomId, String semesterId) throws SQLException {
-        String sql = "SELECT c.name AS courseName, t.name AS teacherName, "
+        String sql = "SELECT s.schedule_id AS scheduleId, c.name AS courseName, t.name AS teacherName, "
                    + "s.classroom_id AS classroomId, s.weekday, "
-                   + "s.start_slot AS startSlot, s.slot_count AS slotCount, s.week_type AS weekType "
+                   + "s.start_slot AS startSlot, s.slot_count AS slotCount, s.week_type AS weekType, "
+                   + "s.start_week AS startWeek, s.end_week AS endWeek "
                    + "FROM schedule s "
                    + "JOIN offering o ON s.offering_id = o.offering_id "
                    + "JOIN course c ON o.course_id = c.course_id "

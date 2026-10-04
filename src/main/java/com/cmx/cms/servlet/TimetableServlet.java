@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.cmx.cms.dao.ClassDao;
 import com.cmx.cms.dao.ScheduleDao;
 import com.cmx.cms.dao.SemesterDao;
+import com.cmx.cms.service.ScheduleService;
 @WebServlet ("/timetable")
 public class TimetableServlet extends HttpServlet{
     @Override
@@ -24,6 +25,7 @@ public class TimetableServlet extends HttpServlet{
             req.setAttribute("clazzs", new ClassDao().getAll());
             req.setAttribute("semesters", new SemesterDao().getAll());
             req.setAttribute("slots", Arrays.asList(1,3,5,7,9));
+            req.setAttribute("holidays", new ScheduleService().getHolidayMarks(semesterId));
             req.getRequestDispatcher("/WEB-INF/jsp/timetable-list.jsp").forward(req, resp);
         } catch (Exception e) {
             // TODO: handle exception

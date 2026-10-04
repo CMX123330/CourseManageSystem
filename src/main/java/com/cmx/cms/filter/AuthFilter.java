@@ -43,7 +43,7 @@ public class AuthFilter implements Filter {
         boolean allowed = false;
         if ("teacher".equals(role)) {
             allowed = uripath.contains("teachertable") || uripath.contains("classroomtable")
-                    || uripath.contains("timetable") || uripath.endsWith("/");
+                    || uripath.contains("timetable") || uripath.endsWith("/") || uripath.contains("scheduleChange");
 
         } else if ("student".equals(role)) {
             allowed = uripath.contains("/mytimetable") || uripath.contains("/courseSelect")

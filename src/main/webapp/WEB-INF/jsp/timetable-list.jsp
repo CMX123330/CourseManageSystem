@@ -11,7 +11,7 @@
 
         <body>
             <h1>班级课表</h1>
-            <c:if test=" ${sessionScope.user.role !='student' }">
+            <c:if test="${sessionScope.user.role != 'student'}">
                 <%-- 顶部筛选表单：GET 提交，参数带到 URL --%>
                     <form action="${pageContext.request.contextPath}/timetable" method="get">
                         班级：<select name="classId">
@@ -28,42 +28,46 @@
                         </select>
                         <button type="submit">查询课表</button>
                     </form>
+            </c:if>
 
                     <c:if test="${empty schedules}">
                         <p>该学期暂无排课，请先到排课管理添加。</p>
                     </c:if>
-
-                    <%-- 二维课表：外层时段、内层星期、最内层匹配记录 --%>
-                        <table>
-                            <tr>
-                                <th>节次</th>
-                                <th>星期一</th>
-                                <th>星期二</th>
-                                <th>星期三</th>
-                                <th>星期四</th>
-                                <th>星期五</th>
-                                <th>星期六</th>
-                                <th>星期日</th>
-                            </tr>
-                            <c:forEach var="slot" items="${slots}"> <%-- 第 1 层：5 个时段 --%>
-                                    <tr>
-                                        <td>第${slot}-${slot + 1}节</td>
-                                        <c:forEach var="day" begin="1" end="7"> <%-- 第 2 层：7 个星期 --%>
-                                                <td>
-                                                    <c:forEach var="s" items="${schedules}"> <%-- 第 3 层：所有排课 --%>
-                                                            <c:if test="${s.weekday == day && s.startSlot == slot}">
-                                                                ${s.courseName}<br>
-                                                                ${s.teacherName} ${s.classroomId}
-                                                                <c:if test="${s.weekType != '全周'}">（${s.weekType}）
-                                                                </c:if>
+                    <table>
+                        <tr>
+                            <th>节次</th>
+                            <th>星期一</th>
+                            <th>星期二</th>
+                            <th>星期三</th>
+                            <th>星期四</th>
+                            <th>星期五</th>
+                            <th>星期六</th>
+                            <th>星期日</th>
+                        </tr>
+                        <c:forEach var="slot" items="${slots}"> <%-- 第 1 层：5 个时段 --%>
+                                <tr>
+                                    <td>第${slot}-${slot + 1}节</td>
+                                    <c:forEach var="day" begin="1" end="7"> <%-- 第 2 层：7 个星期 --%>
+                                            <td>
+                                                <c:forEach var="s" items="${schedules}"> <%-- 第 3 层：所有排课 --%>
+                                                        <c:if test="${s.weekday == day && s.startSlot == slot}">
+                                                            ${s.courseName}<br>
+                                                            ${s.teacherName} ${s.classroomId}
+                                                            <c:if test="${s.weekType != '全周'}">（${s.weekType}）
                                                             </c:if>
-                                                    </c:forEach>
-                                                </td>
-                                        </c:forEach>
-                                    </tr>
-                            </c:forEach>
-                        </table>
-            </c:if>
+                                                            <c:forEach var="hd" items="${holidays}">
+                                                                <c:if test="${hd.weekday == day && hd.week >= s.startWeek && hd.week <= s.endWeek
+                                                                        && (s.weekType == '全周' || (s.weekType == '单周' && hd.week mod 2 == 1) || (s.weekType == '双周' && hd.week mod 2 == 0))}">
+                                                                    <br><span style="color:red">停课·${hd.name}</span>
+                                                                </c:if>
+                                                            </c:forEach>
+                                                        </c:if>
+                                                </c:forEach>
+                                            </td>
+                                    </c:forEach>
+                                </tr>
+                        </c:forEach>
+                    </table>
         </body>
 
         </html>

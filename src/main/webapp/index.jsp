@@ -31,6 +31,8 @@
                             <a class="nav-card" href="${pageContext.request.contextPath}/course">课程管理</a>
                             <a class="nav-card" href="${pageContext.request.contextPath}/student">学生管理</a>
                             <a class="nav-card" href="${pageContext.request.contextPath}/teacher">教师管理</a>
+                            <a class="nav-card" href="${pageContext.request.contextPath}/holiday">节假日管理</a>
+                            <a class="nav-card" href="${pageContext.request.contextPath}/changeApprove">调课审批</a>
                         </div>
                     </div>
 
@@ -49,6 +51,7 @@
                             <a class="nav-card" href="${pageContext.request.contextPath}/timetable">班级课表</a>
                             <a class="nav-card" href="${pageContext.request.contextPath}/teachertable">教师课表</a>
                             <a class="nav-card" href="${pageContext.request.contextPath}/classroomtable">教室课表</a>
+                            <a class="nav-card" href="${pageContext.request.contextPath}/scheduleChange">我的调课</a>
                         </div>
                     </div>
                 </c:if>
@@ -57,6 +60,7 @@
                         <h2>我的</h2>
                         <div class="nav-grid">
                             <a class="nav-card" href="${pageContext.request.contextPath}/mytimetable">我的课表</a>
+                            <a class="nav-card" href="${pageContext.request.contextPath}/courseSelect">选课</a>
                         </div>
                     </div>
                 </c:if>

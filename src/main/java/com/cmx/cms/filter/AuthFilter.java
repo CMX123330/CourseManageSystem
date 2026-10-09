@@ -23,7 +23,7 @@ public class AuthFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
 
         String path = req.getRequestURI();
-        if (path.endsWith("/login") || path.contains("/css/")) {
+        if (path.endsWith("/login") || path.contains("/css/") || path.contains("/api/")) {
             chain.doFilter(request, response);
             return;
         }

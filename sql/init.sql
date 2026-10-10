@@ -140,3 +140,10 @@ create table schedule_change(
     constraint fk_sc_schedule FOREIGN KEY (schedule_id) REFERENCES schedule(schedule_id),
     constraint fk_sc_offering FOREIGN KEY (offering_id) REFERENCES offering(offering_id)
 )ENGINE=InnoDB DEFAULT charset=utf8mb4;
+create table major_course(
+    major_id  VARCHAR(10) NOT NULL COMMENT '专业编号',
+    course_id VARCHAR(10) NOT NULL COMMENT '课程编号（必修）',
+    PRIMARY KEY (major_id, course_id),
+    constraint fk_mc_major  FOREIGN KEY (major_id)  REFERENCES major(major_id),
+    constraint fk_mc_course FOREIGN KEY (course_id) REFERENCES course(course_id)
+)ENGINE=InnoDB DEFAULT charset=utf8mb4;

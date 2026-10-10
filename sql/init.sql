@@ -147,3 +147,13 @@ create table major_course(
     constraint fk_mc_major  FOREIGN KEY (major_id)  REFERENCES major(major_id),
     constraint fk_mc_course FOREIGN KEY (course_id) REFERENCES course(course_id)
 )ENGINE=InnoDB DEFAULT charset=utf8mb4;
+create table student_state(
+    student_id  VARCHAR(10) NOT NULL COMMENT '学号',
+    semester_id VARCHAR(20) NOT NULL COMMENT '学期',
+    energy      INT NOT NULL DEFAULT 100 COMMENT '精力 0-100',
+    mood        INT NOT NULL DEFAULT 100 COMMENT '心情 0-100',
+    diligence   INT NOT NULL DEFAULT 50  COMMENT '勤奋 0-100（个体固定特质）',
+    attendance_rate DECIMAL(5,2) NOT NULL DEFAULT 1.00 COMMENT '出勤率',
+    PRIMARY KEY (student_id, semester_id),
+    constraint fk_ss_student FOREIGN KEY (student_id) REFERENCES student(student_id)
+)ENGINE=InnoDB DEFAULT charset=utf8mb4;

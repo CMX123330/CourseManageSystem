@@ -24,10 +24,16 @@ public class SimAdvanceApi extends HttpServlet{
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json;charset=UTF-8");
-        SimState state = SimulationEngine.getInstance().tick();
-        Map<String,Object> result = new LinkedHashMap<>();
-        result.put("code", 200);
-        result.put("data", state);
+        Map<String, Object> result = new LinkedHashMap<>();
+        try {
+            SimState state = SimulationEngine.getInstance().tick();
+            result.put("code", 200);
+            result.put("data", state);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.put("code", 500);
+            result.put("data", "推进失败");
+        }
         resp.getWriter().write(mapper.writeValueAsString(result));
     }
 }

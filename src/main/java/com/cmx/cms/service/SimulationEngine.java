@@ -1,5 +1,6 @@
 package com.cmx.cms.service;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
@@ -9,6 +10,7 @@ import com.cmx.cms.dao.OfferingDao;
 import com.cmx.cms.dao.ScheduleDao;
 import com.cmx.cms.dao.StudentDao;
 import com.cmx.cms.dao.StudentOfferingDao;
+import com.cmx.cms.dao.StudentStateDao;
 import com.cmx.cms.dao.TeacherDao;
 import com.cmx.cms.model.Schedule;
 import com.cmx.cms.model.MajorCourse;
@@ -16,6 +18,7 @@ import com.cmx.cms.model.Offering;
 import com.cmx.cms.model.SimState;
 import com.cmx.cms.model.Student;
 import com.cmx.cms.model.StudentOffering;
+import com.cmx.cms.model.StudentState;
 import com.cmx.cms.model.Teacher;
 
 public class SimulationEngine {
@@ -34,7 +37,27 @@ public class SimulationEngine {
         return state;
     }
 
-    public SimState tick() {
+    private void runBehaviorRules() throws SQLException{
+        List<StudentState> states = new StudentStateDao().getAll();
+        Random rand = new Random();
+        int skipped = 0;
+        for (StudentState st : states) {
+            double skipProb = (100-st.getEnergy())/200.0
+            +(100-st.getDiligence())/400.0;
+            if(rand.nextDouble() < skipProb) {
+                st.setEnergy(Math.min(0, st.getEnergy() + 5));
+                st.setMood(Math.min(100,st.getMood()+ 2));
+                st.setAttendanceRate(st.getAttendanceRate().subtract(new BigDecimal("0.02")));
+                skipped++;
+            }else {
+                st.setEnergy(Math.max(0, st.getEnergy() - 5));
+                st.setMood(Math.max(0,st.getMood()-3));
+            }
+            new StudentStateDao().update(st);
+        }
+state.getEvents().add("第 " + state.getWeek() + " 周：" + skipped + "/" + states.size() + " 人翘课");
+    }
+    public SimState tick() throws SQLException {
         if (!state.isStarted()) {
             state.setStarted(true);
             state.setWeek(1);
@@ -43,6 +66,7 @@ public class SimulationEngine {
             state.setWeek(state.getWeek() + 1);
             state.getEvents().add("第 " + state.getWeek() + " 周推进");
         }
+        runBehaviorRules();
         return state;
     }
 
@@ -131,11 +155,26 @@ public class SimulationEngine {
     public SimState startSemester() throws SQLException {
         state.setWeek(1);
         state.setStarted(true);
+        initStudentStates();                 // 先初始化学生个体状态（勤奋随机=个体差异）
         int offerings = autoCreateOfferings();
         int schedules = autoSchedule();
         int selections = autoSelectCourses();
         state.getEvents().add("学期开始：自动开课 " + offerings + " 门、排课 " + schedules
                 + " 条、学生选课 " + selections + " 人次");
         return state;
+    }
+    private void initStudentStates() throws SQLException{
+        List<Student> students = new StudentDao().getAll();
+        Random rand = new Random();
+        for (Student st : students) {
+            StudentState state = new StudentState();
+            state.setStudentId(st.getStudentId());
+            state.setEnergy(100);
+            state.setMood(100);
+            state.setAttendanceRate(new BigDecimal("1.00"));
+            state.setDiligence(30+rand.nextInt(51));
+            state.setSemesterId(this.state.getSemesterId());
+            new StudentStateDao().add(state);
+        }
     }
 }

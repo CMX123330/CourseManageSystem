@@ -1,8 +1,11 @@
 package com.cmx.cms.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.cmx.cms.dao.MajorCourseDao;
@@ -37,26 +40,33 @@ public class SimulationEngine {
         return state;
     }
 
-    private void runBehaviorRules() throws SQLException{
+    private void runBehaviorRules() throws SQLException {
         List<StudentState> states = new StudentStateDao().getAll();
         Random rand = new Random();
         int skipped = 0;
+
         for (StudentState st : states) {
-            double skipProb = (100-st.getEnergy())/200.0
-            +(100-st.getDiligence())/400.0;
-            if(rand.nextDouble() < skipProb) {
+
+            double skipProb = (100 - st.getEnergy()) / 200.0
+                    + (100 - st.getDiligence()) / 400.0;
+            if (rand.nextDouble() < skipProb) {
                 st.setEnergy(Math.min(0, st.getEnergy() + 5));
-                st.setMood(Math.min(100,st.getMood()+ 2));
+                st.setMood(Math.min(100, st.getMood() + 2));
                 st.setAttendanceRate(st.getAttendanceRate().subtract(new BigDecimal("0.02")));
                 skipped++;
-            }else {
+            } else {
                 st.setEnergy(Math.max(0, st.getEnergy() - 5));
-                st.setMood(Math.max(0,st.getMood()-3));
+                st.setMood(Math.max(0, st.getMood() - 3));
+            }
+            if (state.getWeek() % 4 == 0) {
+                st.setMood(Math.min(100, st.getMood() + 30));
+                st.setEnergy(Math.min(100, st.getEnergy() + 15));
             }
             new StudentStateDao().update(st);
         }
-state.getEvents().add("第 " + state.getWeek() + " 周：" + skipped + "/" + states.size() + " 人翘课");
+        state.getEvents().add("第 " + state.getWeek() + " 周：" + skipped + "/" + states.size() + " 人翘课");
     }
+
     public SimState tick() throws SQLException {
         if (!state.isStarted()) {
             state.setStarted(true);
@@ -121,15 +131,16 @@ state.getEvents().add("第 " + state.getWeek() + " 周：" + skipped + "/" + sta
                 }
             }
             if (!placed) {
-                state.getEvents().add("排课失败："+o.getOfferingId()+"无空闲时段");
+                state.getEvents().add("排课失败：" + o.getOfferingId() + "无空闲时段");
             }
         }
         return scheduled;
     }
+
     public int autoSelectCourses() throws SQLException {
         List<Offering> elective = new OfferingDao().getElectives(state.getSemesterId());
         if (elective.isEmpty()) {
-            return 0;   // 没有选修课可选
+            return 0; // 没有选修课可选
         }
         List<Student> students = new StudentDao().getAll();
         Random rand = new Random();
@@ -155,7 +166,7 @@ state.getEvents().add("第 " + state.getWeek() + " 周：" + skipped + "/" + sta
     public SimState startSemester() throws SQLException {
         state.setWeek(1);
         state.setStarted(true);
-        initStudentStates();                 // 先初始化学生个体状态（勤奋随机=个体差异）
+        initStudentStates(); // 先初始化学生个体状态（勤奋随机=个体差异）
         int offerings = autoCreateOfferings();
         int schedules = autoSchedule();
         int selections = autoSelectCourses();
@@ -163,7 +174,8 @@ state.getEvents().add("第 " + state.getWeek() + " 周：" + skipped + "/" + sta
                 + " 条、学生选课 " + selections + " 人次");
         return state;
     }
-    private void initStudentStates() throws SQLException{
+
+    private void initStudentStates() throws SQLException {
         List<Student> students = new StudentDao().getAll();
         Random rand = new Random();
         for (Student st : students) {
@@ -172,9 +184,52 @@ state.getEvents().add("第 " + state.getWeek() + " 周：" + skipped + "/" + sta
             state.setEnergy(100);
             state.setMood(100);
             state.setAttendanceRate(new BigDecimal("1.00"));
-            state.setDiligence(30+rand.nextInt(51));
+            state.setDiligence(30 + rand.nextInt(51));
             state.setSemesterId(this.state.getSemesterId());
             new StudentStateDao().add(state);
         }
+    }
+
+    public Map<String, Object> getStudentState(String studentId) throws SQLException {
+        List<StudentState> states = new StudentStateDao().getAll();
+        if (states.isEmpty()) {
+            return Map.of("avgEnergy", 0, "avgMood", 0, "avgDiligence", 0, "avgAttendanceRate", 0);
+        }
+        double avgeEnergy = states.stream().mapToInt(StudentState::getEnergy).average().orElse(0);
+        double avgeMood = states.stream().mapToInt(StudentState::getMood).average().orElse(0);
+        double avgeDiligence = states.stream().mapToInt(StudentState::getDiligence).average().orElse(0);
+        BigDecimal avgeAttendanceRate = states.stream().map(StudentState::getAttendanceRate)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .divide(new BigDecimal(states.size()), 2, BigDecimal.ROUND_HALF_UP);
+
+        return Map.of("avgEnergy", avgeEnergy, "avgMood", avgeMood, "avgDiligence", avgeDiligence, "avgAttendanceRate",
+                avgeAttendanceRate);
+    }
+
+    /** 统计面板数据：从 student_state 现算，不存新表 */
+    public Map<String, Object> getStats() throws SQLException {
+        Map<String, Object> stats = new LinkedHashMap<>();
+        List<StudentState> states = new StudentStateDao().getAll();
+        if (states.isEmpty()) {
+            stats.put("avgEnergy", 0);
+            stats.put("avgAttendance", 0);
+            stats.put("slackers", 0);
+            return stats;
+        }
+        int energySum = 0;
+        BigDecimal attendanceSum = BigDecimal.ZERO;
+        int slackers = 0;
+        for (StudentState st : states) {
+            energySum += st.getEnergy();
+            attendanceSum = attendanceSum.add(st.getAttendanceRate());
+            if (st.getAttendanceRate().compareTo(new BigDecimal("0.9")) < 0) {
+                slackers++; 
+            }
+        }
+        stats.put("avgEnergy", energySum / states.size());
+        stats.put("avgAttendance",
+                attendanceSum.divide(BigDecimal.valueOf(states.size()), 2, RoundingMode.HALF_UP));
+        stats.put("slackers", slackers);
+        return stats;
     }
 }
